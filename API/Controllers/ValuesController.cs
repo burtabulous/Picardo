@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Persistence;
 using Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Web.Http.Cors;
 
 namespace API.Controllers
 {
+    // [EnableCors(origins: "http://localhost:8080/", headers: "*", methods: "*")]
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
@@ -19,6 +21,7 @@ namespace API.Controllers
         }
 
         // GET api/values
+        [EnableCors(origins: "http://localhost:8080", headers: "*", methods: "*")]        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Value>>> Get()
         {

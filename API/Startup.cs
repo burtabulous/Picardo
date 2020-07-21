@@ -17,6 +17,7 @@ namespace API
 {
     public class Startup
     {
+        readonly string TestCorsPolicy = "_TestCorsPolicy";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -32,6 +33,19 @@ namespace API
             services.AddDbContext<DataContext>(opt => {
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: TestCorsPolicy,
+                    builder =>
+                    {
+                        builder.WithOrigins(" http://localhost:8080",
+                                            " http://localhost:8081")
+                                            .AllowAnyHeader()
+                                            .AllowAnyMethod();
+                    });
+            });
+            
             services.AddControllers();
         }
 
@@ -43,15 +57,18 @@ namespace API
                 app.UseDeveloperExceptionPage();
             }
 
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers()
+                .RequireCors(TestCorsPolicy);
             });
         }
     }

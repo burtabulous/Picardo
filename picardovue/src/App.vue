@@ -45,6 +45,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import axios from 'axios';
 import HelloWorld from './components/HelloWorld.vue';
 
 export default Vue.extend({
@@ -54,8 +55,28 @@ export default Vue.extend({
     HelloWorld,
   },
 
-  data: () => ({
-    //
-  }),
+  props: {
+    testValue: {
+      type: Object,
+      default: null,
+    },
+  },
+
+  data() {
+    return {
+      items: [],
+    };
+  },
+
+  mounted() {
+    this.getTestValuesFromApi();
+  },
+
+  methods: {
+    getTestValuesFromApi() {
+      return axios.get('http://localhost:5000/api/values')
+        .then((response) => { this.items = response.data.results; });
+    },
+  },
 });
 </script>
