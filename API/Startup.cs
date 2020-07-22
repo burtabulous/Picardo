@@ -17,14 +17,12 @@ namespace API
 {
     public class Startup
     {
-        readonly string TestCorsPolicy = "_TestCorsPolicy";
-        public Startup(IConfiguration configuration)
+         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
-
 
         // This method gets called by the runtime. Use this method to add services to the container.
         //THIS IS THE DEPENDENCY INJECTION CONTAINER
@@ -34,17 +32,13 @@ namespace API
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy(name: TestCorsPolicy,
-                    builder =>
-                    {
-                        builder.WithOrigins(" http://localhost:8080",
-                                            " http://localhost:8081")
-                                            .AllowAnyHeader()
-                                            .AllowAnyMethod();
-                    });
-            });
+           services.AddCors(opt => {
+               opt.AddPolicy("CorsPolicy", policy => 
+               {
+                   policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:8080", 
+                                                                        "http://localhost:8081");
+               });
+           });
             
             services.AddControllers();
         }
@@ -57,18 +51,17 @@ namespace API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseCors();
+            app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers()
-                .RequireCors(TestCorsPolicy);
+                endpoints.MapControllers();                
             });
         }
     }
