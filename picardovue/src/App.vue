@@ -75,7 +75,7 @@ export default Vue.extend({
   methods: {
     getTestValuesFromApi() {
       return axios.get('http://localhost:5000/api/values')
-        .then((response) => { this.items = response.data; });
+        .then((response) => { console.log('items from api: ', response.data); });
     },
   },
 });
